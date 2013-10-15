@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MBViewController : UIViewController
+@interface MBViewController : UIViewController  <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIActionSheetDelegate>
+@property (weak, nonatomic) IBOutlet UIImageView *mainImageView;
+@property (nonatomic, strong) UITapGestureRecognizer *tapGestureRecognizer;
+
 
 @end

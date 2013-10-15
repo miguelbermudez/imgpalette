@@ -7,12 +7,25 @@
 //
 
 #import "MBAppDelegate.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @implementation MBAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    if ([self doesCameraSupportTakingPhotos]) {
+        NSLog(@"The camera supports taking photos.");
+    } else {
+        NSLog(@"The camera does not support taking photos");
+    }
+    if ([self doesCameraSupportShootingVideos]) {
+        NSLog(@"The camera supports shooting videos.");
+    } else{
+        NSLog(@"The camera does not support shooting videos.");
+    }
+    
     return YES;
 }
 							
@@ -43,4 +56,53 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+#pragma mark - Camera Checks
+
+- (BOOL) cameraSupportsMedia:(NSString *)paramMediaType sourceType:(UIImagePickerControllerSourceType)paramSourceType {
+    
+    __block BOOL result = NO;
+    
+    if ([paramMediaType length] == 0) {
+        NSLog(@"Media type is empty.");
+        return NO;
+    }
+    
+    NSArray *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:paramSourceType];
+    
+    [availableMediaTypes enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        NSString *mediaType = (NSString *)obj;
+        if ([mediaType isEqualToString:paramMediaType]) {
+            result = YES;
+            *stop = YES;
+        }
+    }];
+    
+    return result;
+}
+
+- (BOOL) doesCameraSupportShootingVideos {
+    return [self cameraSupportsMedia:(__bridge NSString *)kUTTypeMovie
+                          sourceType:UIImagePickerControllerSourceTypeCamera];
+}
+
+- (BOOL) doesCameraSupportTakingPhotos {
+    return [self cameraSupportsMedia:(__bridge NSString *)kUTTypeImage
+                          sourceType:UIImagePickerControllerSourceTypeCamera];
+}
+
+
+#pragma mark - Asset Library Checks
+
+- (BOOL) isPhotoLibraryAvailable{
+    return [UIImagePickerController isSourceTypeAvailable:
+            UIImagePickerControllerSourceTypePhotoLibrary];
+}
+- (BOOL) canUserPickVideosFromPhotoLibrary{
+    return [self
+            cameraSupportsMedia:(__bridge NSString *)kUTTypeMovie sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+}
+- (BOOL) canUserPickPhotosFromPhotoLibrary{
+    return [self
+            cameraSupportsMedia:(__bridge NSString *)kUTTypeImage sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+}
 @end

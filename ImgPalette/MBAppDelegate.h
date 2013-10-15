@@ -12,4 +12,7 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
+- (BOOL)doesCameraSupportTakingPhotos;
+- (BOOL)isPhotoLibraryAvailable;
+- (BOOL) canUserPickPhotosFromPhotoLibrary;
 @end
